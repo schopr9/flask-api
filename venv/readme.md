@@ -1,3 +1,8 @@
+python migrate.py db init
+python migrate.py db migrate
+python migrate.py db update
+python run.py
+
 POST /group/new
 
 {
@@ -26,5 +31,10 @@ POST /user/new
 POST /user/:id/groups
 
 {
-    "groups" : [1,3,5]
+<<<<<<< HEAD
+    groups : [1,3,5]
 }
+=======
+    groups : [1,3,5]
+}
+>>>>>>> fc3e6f53d4fab3809092a6cf35b81099dfd51d73
