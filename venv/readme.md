@@ -26,5 +26,5 @@ POST /user/new
 POST /user/:id/groups
 
 {
-    groups : [1,3,5]
+    "groups" : [1,3,5]
 }
