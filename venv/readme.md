@@ -1,4 +1,3 @@
-Routes
     GET /users
     GET /user/:id
     GET /user/:id/groups
