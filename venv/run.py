@@ -51,7 +51,7 @@ def user_new():
 
 @app.route('/user/<id>', methods=['GET'])
 def user_get(id):
-    user = User.query.get(id)
+    user = User.query.get_or_404(id)
     results = user_schema.dump(user).data
     return jsonify({'users': results})
 
@@ -185,15 +185,32 @@ def user_add_groups(id):
 
 @app.route('/user/<id>/groups', methods=['GET'])
 def user_groups(id):
-    user = User.query.get_or_404(id)
+    user = User.query.get(id)
 
     if user:
-        user_groups = user.groups.all()
+        user_groups = user.groups
         results = []
         for obj in user_groups:
             results.append(obj.name)
         return jsonify({"groups" :results})
     else:
-        return jsonify({"err" : "user not found"})
+        resp = jsonify({"error": "user not found"})
+        resp.status_code = 404
+        return resp                
+
+@app.route('/group/<id>/users', methods=['GET'])
+def group_users(id):
+    group = Group.query.get(id)
+
+    if group:
+        group_users = group.users
+        results = []
+        for obj in group_users:
+            results.append(obj.username)
+        return jsonify({"users" :results})
+    else:
+        resp = jsonify({"error": "group not found"})
+        resp.status_code = 404
+        return resp                
             
 app.run(host=os.getenv('IP', '0.0.0.0'),port=int(os.getenv('PORT', 8080)))
