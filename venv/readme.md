@@ -1,20 +1,17 @@
-python migrate.py db init
-python migrate.py db migrate
-python migrate.py db update
-python run.py
+
 
 POST /group/new
 
-{
-    "data": 
-      {
-        "attributes": {
-          "name": "postbeyond1"
+  {
+      "data": 
+        {
+          "attributes": {
+           "name": "postbeyond1"
         },
-        "type": "groups"
-      }
+           "type": "groups"
+       }
       
-}
+  }
 
 POST /user/new
 {
@@ -34,3 +31,19 @@ POST /user/:id/groups
 
     "groups" : [1,3,5]
 }
+
+    GET /users
+    GET /user/:id
+    GET /user/:id/groups
+    PATCH /user/:id  {}
+    DELETE /user/:id 
+    POST /user/new {}
+
+
+    GET /groups
+    GET /group/:id
+    GET /group/:id/users
+    PATCH /group/:id {}
+    POST /group/new  {}
+
+
