@@ -200,6 +200,25 @@ def user_add_groups(id):
         return resp
 
 
+@app.route('/user/<id>/groups', methods=['DELETE'])
+def user_remove_groups(id):
+    user = User.query.get_or_404(id)
+    raw_dict = request.get_json(force=True)
+
+    for group_id in raw_dict['groups']:
+        group = Group.query.get(group_id)
+        if group:
+            user.groups.remove(group)
+
+    if user:
+        user.update()
+        results = user_schema.dump(user).data
+        return jsonify(results)
+    else:
+        resp = jsonify({"error": "group or user not found"})
+        resp.status_code = 404
+        return resp
+
 @app.route('/user/<id>/groups', methods=['GET'])
 def user_groups(id):
     user = User.query.get(id)
