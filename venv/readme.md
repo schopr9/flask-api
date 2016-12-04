@@ -31,10 +31,6 @@ POST /user/new
 POST /user/:id/groups
 
 {
-<<<<<<< HEAD
-    groups : [1,3,5]
+
+    "groups" : [1,3,5]
 }
-=======
-    groups : [1,3,5]
-}
->>>>>>> fc3e6f53d4fab3809092a6cf35b81099dfd51d73
