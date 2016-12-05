@@ -1,3 +1,7 @@
+"""
+author saurabh
+This module will serve as rest api for model user and group
+"""
 import os
 from flask import Flask, jsonify, request, make_response, Response, Request
 from model.models import db, User, Group, CRUD, UserSchema, GroupSchema, app
@@ -18,7 +22,8 @@ group_schema = GroupSchema()
 
 
 @app.before_request
-def before_request():    
+def before_request():
+    """check request content type else return error"""
     if request_wants_json():
         pass
     else:
@@ -29,6 +34,7 @@ def before_request():
 
 @app.route('/users', methods=['GET'])
 def users():
+    """list all the users"""
     users = User.query.all()
     results = user_schema.dump(users, many=True).data
     return jsonify({'users': results})
@@ -36,6 +42,7 @@ def users():
 
 @app.route('/user/new', methods=['POST'])
 def user_new():
+    """create new user"""
     raw_dict = request.get_json(force=True)
     try:
         user_schema.validate(raw_dict)
@@ -63,6 +70,7 @@ def user_new():
 
 @app.route('/user/<id>', methods=['GET'])
 def user_get(id):
+    """retreive single user"""
     user = User.query.get_or_404(id)
     results = user_schema.dump(user).data
     return jsonify({'users': results})
@@ -70,6 +78,7 @@ def user_get(id):
 
 @app.route('/user/<id>', methods=['DELETE'])
 def user_delete(id):
+    """delete specific user"""
     user = User.query.get_or_404(id)
     try:
         delete = user.delete(user)
@@ -86,6 +95,7 @@ def user_delete(id):
 
 @app.route('/user/<id>', methods=['PATCH'])
 def user_update(id):
+    """update specific user"""
     user = User.query.get_or_404(id)
     raw_dict = request.get_json(force=True)
 
@@ -114,6 +124,7 @@ def user_update(id):
 
 @app.route('/groups', methods=['GET'])
 def groups():
+    """list all groups"""
     groups = Group.query.all()
     results = group_schema.dump(groups, many=True).data
     return jsonify({'groups': results})
@@ -121,6 +132,7 @@ def groups():
 
 @app.route('/group/<id>', methods=['GET'])
 def group_get(id):
+    """retreive specific group"""
     group = Group.query.get(id)
     results = group_schema.dump(group).data
     return jsonify({'group': results})
@@ -128,6 +140,7 @@ def group_get(id):
 
 @app.route('/group/new', methods=['POST'])
 def group_new():
+    """create group"""
     raw_dict = request.get_json(force=True)
     try:
         group_schema.validate(raw_dict)
@@ -154,6 +167,7 @@ def group_new():
 
 @app.route('/group/<id>', methods=['PATCH'])
 def group_update(id):
+    """update group"""
     group = Group.query.get_or_404(id)
     raw_dict = request.get_json(force=True)
 
@@ -182,6 +196,7 @@ def group_update(id):
 
 @app.route('/user/<id>/groups', methods=['POST'])
 def user_add_groups(id):
+    """ user can be added to multiple groups"""
     user = User.query.get_or_404(id)
     raw_dict = request.get_json(force=True)
 
@@ -202,6 +217,7 @@ def user_add_groups(id):
 
 @app.route('/user/<id>/groups', methods=['DELETE'])
 def user_remove_groups(id):
+    """user can be removed from multiple groups"""
     user = User.query.get_or_404(id)
     raw_dict = request.get_json(force=True)
 
@@ -221,6 +237,7 @@ def user_remove_groups(id):
 
 @app.route('/user/<id>/groups', methods=['GET'])
 def user_groups(id):
+    """list groups for a user"""
     user = User.query.get(id)
 
     if user:
@@ -237,6 +254,7 @@ def user_groups(id):
 
 @app.route('/group/<id>/users', methods=['GET'])
 def group_users(id):
+    """list users for a group"""
     group = Group.query.get(id)
 
     if group:
