@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -50,12 +51,11 @@ class UserSchema(Schema):
     not_blank = validate.Length(min=1, error='Field cannot be blank')
     id = fields.Integer(dump_only=True)
     username = fields.String(validate=not_blank)
-    email = fields.Email(validate=not_blank)
-
+    email = fields.Email(validate=not_blank)    
     # self links
     def get_top_level_links(self, data, many):
         if many:
-            self_link = "/user/"
+            self_link = "/user/"            
         else:
             self_link = "/user/{}".format(data['id'])
         return {'self': self_link}
@@ -83,7 +83,7 @@ class GroupSchema(Schema):
     not_blank = validate.Length(min=1, error='Field cannot be blank')
     id = fields.Integer(dump_only=True)
     name = fields.String(validate=not_blank)
-    #date_created = fields.DateTime()
+    date_created = fields.DateTime()
 
     # self links
     def get_top_level_links(self, data, many):
