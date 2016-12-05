@@ -29,7 +29,7 @@ def before_request():
 
 @app.route('/users', methods=['GET'])
 def users():
-    users = User.query.all()
+    users = User.query.all().order_by(User.name)
     results = user_schema.dump(users, many=True).data
     return jsonify({'users': results})
 
