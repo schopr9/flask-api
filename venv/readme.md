@@ -18,7 +18,7 @@
 
 POST /group/new
 
-  {
+      {
       "data": 
         {
           "attributes": {
@@ -27,10 +27,11 @@ POST /group/new
            "type": "groups"
        }
       
-  }
+    }
 
 POST /user/new
-  {
+    
+    {
       "data": 
         {
           "attributes": {
@@ -39,19 +40,19 @@ POST /user/new
          },
         "type": "users"
       }
-  }
+    }
 
 POST /user/:id/groups
 
-{
+    {
 
     "groups" : [1,3,5]
-}
+    }
 
 DELETE /user/:id/groups
 
-{
+    {
 
     "groups" : [1,3,5]
-}
+    }
 
