@@ -1,4 +1,6 @@
-
+"""
+models for user and group
+"""
 from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -11,7 +13,7 @@ db = SQLAlchemy(app)
 
 
 class CRUD():
-
+    """helper crud operation for database"""
     def add(self, resource):
         db.session.add(resource)
         return db.session.commit()
