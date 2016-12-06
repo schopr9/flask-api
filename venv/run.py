@@ -35,7 +35,7 @@ def before_request():
 @app.route('/users', methods=['GET'])
 def users():
     """list all the users"""
-    users = User.query.all()
+    users = User.query.order_by(User.username)
     results = user_schema.dump(users, many=True).data
     return jsonify({'users': results})
 
@@ -125,7 +125,7 @@ def user_update(id):
 @app.route('/groups', methods=['GET'])
 def groups():
     """list all groups"""
-    groups = Group.query.all()
+    groups = Group.query.order_by(Group.name)
     results = group_schema.dump(groups, many=True).data
     return jsonify({'groups': results})
 
