@@ -4,7 +4,7 @@ This module will serve as rest api for model user and group
 """
 import os
 from flask import Flask, jsonify, request, make_response, Response, Request
-from model.models import db, User, Group, CRUD, UserSchema, GroupSchema, app
+from model.models import db, User, Group, CRUD, UserSchema, GroupSchema, app, GroupsSchema
 from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
 
@@ -17,9 +17,10 @@ def request_wants_json():
     return request.content_type == 'application/json'
 
 app.response_class = MyResponse
-user_schema = UserSchema()
+user_schema = UserSchema(only=('id', 'email', 'username'))
+users_schema = UserSchema()
 group_schema = GroupSchema()
-
+groups_schema = GroupsSchema()
 
 @app.before_request
 def before_request():
@@ -129,6 +130,20 @@ def groups():
     results = group_schema.dump(groups, many=True).data
     return jsonify({'groups': results})
 
+@app.route('/groups/user', methods=['GET'])
+def groups_user_count():
+    """list all groups"""
+    groups = Group.query.all()
+    results = groups_schema.dump(groups, many=True).data    
+    return jsonify({'groups': results})
+
+@app.route('/users/group', methods=['GET'])
+def users_group_count():
+    """list all groups"""
+    users = User.query.all()
+    results = users_schema.dump(users, many=True).data    
+    return jsonify({'groups': results})
+
 
 @app.route('/group/<id>', methods=['GET'])
 def group_get(id):
@@ -186,6 +201,23 @@ def group_update(id):
         resp = jsonify({"error": err.messages})
         resp.status_code = 401
         return resp
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        resp = jsonify({"error": str(e)})
+        resp.status_code = 401
+        return resp
+
+@app.route('/group/<id>', methods=['DELETE'])
+def group_delete(id):
+    """delete group will cascade relationship"""
+    group = Group.query.get_or_404(id)    
+
+    try:
+        delete = group.delete(group)
+        response = make_response()
+        response.status_code = 204
+        return response
 
     except SQLAlchemyError as e:
         db.session.rollback()

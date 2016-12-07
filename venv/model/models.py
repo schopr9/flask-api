@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow_jsonapi import Schema, fields
-from marshmallow import validate
+from marshmallow import validate, pre_load
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test4.db'
@@ -14,6 +14,7 @@ db = SQLAlchemy(app)
 
 class CRUD():
     """helper crud operation for database"""
+
     def add(self, resource):
         db.session.add(resource)
         return db.session.commit()
@@ -39,7 +40,8 @@ class User(db.Model, CRUD):
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
     groups = db.relationship('Group',
-                             backref=db.backref('users', lazy= 'dynamic'), secondary=relationship_table)
+                             backref=db.backref('users', lazy='dynamic'), secondary=relationship_table)
+
 
     def __init__(self, username, email):
         self.username = username
@@ -53,11 +55,18 @@ class UserSchema(Schema):
     not_blank = validate.Length(min=1, error='Field cannot be blank')
     id = fields.Integer(dump_only=True)
     username = fields.String(validate=not_blank)
-    email = fields.Email(validate=not_blank)    
+    email = fields.Email(validate=not_blank)
+    groups = fields.Method('groups_count')
     # self links
+
+    @pre_load(pass_many=True)
+    def groups_count(self, data):
+        group_count = len(data.groups)
+        return group_count
+
     def get_top_level_links(self, data, many):
         if many:
-            self_link = "/user/"            
+            self_link = "/user/"
         else:
             self_link = "/user/{}".format(data['id'])
         return {'self': self_link}
@@ -70,7 +79,6 @@ class Group(db.Model, CRUD):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
     date_created = db.Column(db.DateTime)
-
 
     def __init__(self, name, data_created=None, user_id=None):
         self.name = name
@@ -97,3 +105,21 @@ class GroupSchema(Schema):
 
     class Meta:
         type_ = 'groups'
+
+
+class GroupsSchema(Schema):
+    not_blank = validate.Length(min=1, error='Field cannot be blank')
+    users = fields.Method('users_count', dump_only=True, ordered = True)
+    id = fields.Integer(dump_only=True)
+    name = fields.String(validate=not_blank)
+    date_created = fields.DateTime()    
+    # self links
+
+
+    @pre_load(pass_many=True)
+    def users_count(self, data):
+        user_count = data.users.count()        
+        return user_count
+
+    class Meta:
+        type_ = 'groups'        
